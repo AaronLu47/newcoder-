@@ -1,0 +1,106 @@
+/*
+画家小Q又开始他的艺术创作。小Q拿出了一块有NxM像素格的画板, 画板初始状态是空白的,用'X'表示。
+小Q有他独特的绘画技巧,每次小Q会选择一条斜线, 如果斜线的方向形如'/',即斜率为1,小Q会选择这条斜线中的一段格子,都涂画为蓝色,用'B'表示;如果对角线的方向形如'\',即斜率为-1,小Q会选择这条斜线中的一段格子,都涂画为黄色,用'Y'表示。
+如果一个格子既被蓝色涂画过又被黄色涂画过,那么这个格子就会变成绿色,用'G'表示。
+小Q已经有想画出的作品的样子, 请你帮他计算一下他最少需要多少次操作完成这幅画。
+*/
+
+#include <iostream>
+using namespace std;
+
+int main(void) {
+    // 记录结果：操作数（绘制路径数） 
+    int ans = 0;
+
+    // n*m，n行m列 
+    int n, m;
+    cin >> n >> m;
+    char array[n][m];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> array[i][j];
+        } 
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (array[i][j] == 'Y') {
+                // 路径加一 
+                ans++;
+
+                int a = i + 1;
+                int b = j + 1;
+                while (a < n && b < m) {
+                    // 只要不出界，就往右下遍历
+                    if (array[a][b] == 'Y') {
+                        array[a][b] = 'X';
+                        a++;
+                        b++;
+                    } else if (array[a][b] == 'G') {
+                        array[a][b] = 'B';
+                        a++;
+                        b++;
+                    } else {
+                        // 只有遇到Y和G才继续遍历，遇到X和B都停 
+                        break;
+                    } 
+                }
+            }
+            if (array[i][j] == 'B') {
+                // 蓝色处理类似黄色 
+                ans++;
+                int a = i + 1;
+                int b = j - 1;
+                while (a < n && b >= 0) {
+                    // 只要不出界，就往左下遍历
+                    if (array[a][b] == 'B') {
+                        array[a][b] = 'X';
+                        a++;
+                        b--;
+                    } else if (array[a][b] == 'G') {
+                        array[a][b] = 'Y';
+                        a++;
+                        b--;
+                    } else {
+                        break;
+                    } 
+                }
+            }
+            if (array[i][j] == 'G') {
+                // 绿色当黄色+蓝色处理 
+                ans += 2;
+                int a = i + 1;
+                int b = j + 1;
+                while (a < n && b < m) {
+                    if (array[a][b] == 'Y') {
+                        array[a][b] = 'X';
+                        a++;
+                        b++;
+                    } else if (array[a][b] == 'G') {
+                        array[a][b] = 'B';
+                        a++;
+                        b++;
+                    } else {
+                        break;
+                    } 
+                }
+                int c = i + 1;
+                int d = j - 1;
+                while (c < n && d >= 0) {
+                    if (array[c][d] == 'B') {
+                        array[c][d] = 'X';
+                        c++;
+                        d--;
+                    } else if (array[c][d] == 'G') {
+                        array[c][d] = 'Y';
+                        c++;
+                        d--;
+                    } else {
+                        break;
+                    } 
+                }
+            }
+        } 
+    }
+    cout << ans << endl;
+}
